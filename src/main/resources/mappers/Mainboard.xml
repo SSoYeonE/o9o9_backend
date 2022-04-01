@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="Mainboard">
+
+	<!-- 쿼리를 xml로 작성하고 id:식별값  
+		  parameterType:우리가 전달할값 
+	     resultType : 받아오는값  -->
+	     
+	<!-- if test="key=='1'"  - 이렇게 쓰면 안된다 인식안된다 -->
+	
+	<select id="Mainboard_getList"  parameterType="MainboardDto"  resultType="MainboardDto">
+ 		
+	 	select mboard_seq,
+			user_seq,
+			(select user_image1 from member where user_seq = m.user_seq) as user_image1,
+			(select user_name from member where user_seq = m.user_seq) as user_name,
+			(select user_level from member where user_seq = m.user_seq) as user_level,
+			wdate,
+			contents,
+			contents_url,
+			view_yn,
+			substring(m.hashtag, 2, CHAR_LENGTH(m.hashtag)-2) hashtag ,
+			posting_type,
+			del_yn,
+			like_seq
+			
+		from mainboard m
+		
+		<if test='!keyword.equals("") and keyword!=null'>
+			where hashtag like concat('%#', #{keyword} , '#%')
+		</if> 
+		
+		order by mboard_seq desc
+		limit #{start}, #{pageSize}    
+	</select>
+	
+	<!--  
+		paging  쿼리는  dbms마다 다르다 
+		select ~~  limit 시작위치, 개수
+	 -->
+	 
+	<!--   페이징때문에 전체 레코드 개수를 알아오기 위한 쿼리가 필요한다  -->
+	
+	<select id="Mainboard_getTotal" parameterType="MainboardDto" resultType="Integer">
+		select count(*) from mainboard 
+		<if test='keyword!=null'>
+			where hashtag like concat('%', #{keyword} , '%')
+		</if> 
+	</select>
+
+	
+	<insert id="Mainboard_insert" parameterType="MainboardDto">
+		insert into mainboard
+		( user_seq, contents, contents_url, view_yn, hashtag, posting_type, wdate,del_yn,like_seq)
+		values
+		(#{user_seq}, #{contents}, #{contents_url}, #{view_yn}, #{hashtag}, #{posting_type},now(), #{del_yn},#{like_seq})
+	</insert>
+	
+	<select id="Mainboard_getView"  parameterType="String"  resultType="MainboardDto">
+ 		select
+ 			m.mboard_seq
+			(select user_seq from member B where B.userseq=A.writer) as user_seq
+			,(select user_image1 from member B where B.user_seq=A.user_seq) as user_image1
+			,(select user_name from member B where B.user_seq=A.user_seq) as user_name
+			,m.wdate
+			,m.contents
+			,m.contents_url
+			,m.view_yn
+			,m.hashtag
+			,m.posting_type
+			,m.del_yn
+			,m.like_seq
+			
+		from mainboard m where mboard_seq=#{mboard_seq}
+
+	</select>
+	
+	<delete id="Mainboard_delete" parameterType="MainboardDto" >
+	delete from mainboard where mboard_seq=#{mboard_seq}
+	</delete>
+	
+	
+	<update id="Mainboard_update" parameterType="MainboardDto" >
+	update mainboard 
+		set contents = #{contents}
+			,contents_url = #{contents_url}
+			,hashtag = #{hashtag}
+			,view_yn = #{view_yn}
+			,posting_type = #{posting_type}
+			,del_yn = #{del_yn}
+			,like_seq = #{like_seq}
+	where  mboard_seq=#{mboard_seq}
+	</update>
+		
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

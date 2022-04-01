@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="Reply">
+
+	
+	<insert id="Reply_insert" parameterType="ReplyDto">
+		insert into reply
+		(reply, rdate)
+		values
+		(#{reply}, now())
+	</insert>
+	
+	<select id="Reply_getList" parameterType="ReplyDto"  resultType="ReplyDto">
+	
+	select 
+			A.reply,A.rdate
+	from reply A
+	where reply_seq=#{reply_seq}
+	
+	</select>
+	
+	<select id="Reply_getView" parameterType="ReplyDto"  resultType="ReplyDto">
+	select 
+			A.reply,A.rdate
+	from reply A
+	
+	where A.reply_seq=#{reply_seq}
+	</select>
+	
+	<update id="Reply_update" parameterType="ReplyDto">
+		update reply set reply = #{reply} where reply_seq=#{reply_seq}
+	</update>
+	
+	<delete id="Reply_delete" parameterType="ReplyDto">
+		delete from reply where reply_seq=#{reply_seq}
+	</delete>
+		
+</mapper>
