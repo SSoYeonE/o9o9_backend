@@ -38,6 +38,7 @@
 	<delete id="Comment_delete" parameterType="CommentDto">
 		delete from tb_comment where id=#{comment_id}
 	</delete>
+	
 		
 </mapper>
 

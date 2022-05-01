@@ -18,8 +18,8 @@ public class LikeDaoImpl implements LikeDao {
 	}
 
 	@Override
-	public LikeDto getView(long id) {
-		return sm.selectOne("Like_getView",id);
+	public LikeDto getView(LikeDto dto) {
+		return sm.selectOne("Like_getView",dto);
 	}	
 	@Override
 	public void insert(LikeDto dto) {
@@ -28,13 +28,13 @@ public class LikeDaoImpl implements LikeDao {
 
 	@Override
 	public void update(LikeDto dto) {
-		sm.insert("Likeo_update",dto);
+		sm.update("Like_update",dto);
 		
 	}
 
 	@Override
 	public void delete(LikeDto dto) {
-		sm.insert("Like_delete",dto);
+		sm.delete("Like_delete",dto);
 		
 	}
 

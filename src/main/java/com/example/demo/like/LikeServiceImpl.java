@@ -21,8 +21,8 @@ public class LikeServiceImpl implements LikeService {
 	}
 
 	@Override
-	public LikeDto getView(long id) {
-		return dao.getView(id);
+	public LikeDto getView(LikeDto dto) {
+		return dao.getView(dto);
 	}
 
 	@Override

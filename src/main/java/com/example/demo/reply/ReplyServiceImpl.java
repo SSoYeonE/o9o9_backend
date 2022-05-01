@@ -42,6 +42,12 @@ public class ReplyServiceImpl implements ReplyService {
 		dao.delete(dto);
 		
 	}
+
+	@Override
+	public List<ReplyDto> getList(ReplyDto dto) {
+		
+		return dao.getList(dto);
+	}
 	
 
 }

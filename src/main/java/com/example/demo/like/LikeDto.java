@@ -16,4 +16,5 @@ public class LikeDto {
 	private String mboard_seq="";
 	private String user_seq="";
 	private String like_seq="";
+	private String emoji="";
 }

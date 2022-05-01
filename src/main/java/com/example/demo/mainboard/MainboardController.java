@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.demo.board.domain.BoardDto;
 import com.example.demo.common.FileUploadUtil;
+import com.example.demo.jobposting.JobpostingDto;
+import com.example.demo.jobposting.JobpostingService;
+import com.example.demo.like.LikeDto;
+import com.example.demo.like.LikeService;
 
 @CrossOrigin("*") //http:127.0.0.1 혹은 localhost
 @RestController   //jsp를 호출하지않고 json형태로 데이터를 보낸다
@@ -30,6 +33,14 @@ public class MainboardController {
 	@Resource(name="mainboardService")
 	MainboardService service;	
 	
+	@Resource(name="likeService")
+	LikeService likeService;
+	
+	@Resource(name="jobpostingService")
+	JobpostingService jobpostingService;	
+	
+	
+	
 	@RequestMapping("/mainboard/list/{pg}")  //페이지
 	HashMap<String, Object> getList(@PathVariable("pg")int pg, MainboardDto dto)
 	{
@@ -42,24 +53,27 @@ public class MainboardController {
 		map.put("totalCnt", service.getTotalCnt(dto));
 		map.put("list", service.getList(dto));
 		
+		//map.put("jobview", jobpostingService.getView(dto.getMboard_seq()));
+		
 		return map;
 	}
 	
-	@RequestMapping("/mainboard/view/{id}")
-	MainboardDto getView(@PathVariable("id")long id)
+	@RequestMapping("/mainboard/view/{mboard_seq}")
+	MainboardDto getView(@PathVariable("mboard_seq")long mboard_seq)
 	{
-		return service.getView(id);
+		return service.getView(mboard_seq);
 	}
 	
 	@RequestMapping("/mainboard/insert")
-	Map<String, String> insert(MultipartFile file ,  MainboardDto dto, HttpServletRequest req)
+	Map<String, String> insert(MultipartFile file ,  MainboardDto dto, JobpostingDto jobDto, HttpServletRequest req)
 	{		//파일업로드를 하려면 MultipartFile 가 필요하다
 //		System.out.println(dto.getTitle());
 //		System.out.println(dto.getWriter());
 //		System.out.println(dto.getContents());
 		System.out.println(dto);// 전송받은 데이터 확인
+		System.out.println(file);
 		
-		dto.setHashtag(dto.getHashtag()+"#");
+		dto.setHashtag("#"+dto.getHashtag()+"#");
 		
 		//fileupload/image
 		String uploadDir = fileUploadPath+ "/image" ; // 파일이 업로드될 경로
@@ -79,7 +93,23 @@ public class MainboardController {
 		}
 		
 		service.insert(dto);
+		
+		System.out.println(dto.getMboard_seq());
+		
+		LikeDto likeDto = new LikeDto();
+		likeDto.setMboard_seq(dto.getMboard_seq());
+		likeDto.setUser_seq(dto.getUser_seq());
+		likeDto.setEmoji("like");
+		
+		likeService.insert(likeDto);
 		Map<String, String> map = new HashMap<String, String>();
+		
+		System.out.println("jobpostype-------------" + dto.getPosting_type());
+		if(dto.getPosting_type().equals("1")) {
+			System.out.println("채용공고 저장");
+			jobDto.setMboard_seq(dto.getMboard_seq());
+			jobpostingService.insert(jobDto);
+		}
 		map.put("result", "success");
 		return map;
 	}
@@ -87,6 +117,7 @@ public class MainboardController {
 	 @RequestMapping("/mainboard/delete/{mboard_seq}")
 		Map<String, String> delete(@PathVariable("mboard_seq")long mboard_seq, HttpServletRequest req)
 		{		
+		 	System.out.println("깨아아앙아아아아아아아아");
 			MainboardDto dto=new MainboardDto();
 			dto.setMboard_seq(mboard_seq+"");
 			service.delete(dto);
@@ -97,7 +128,7 @@ public class MainboardController {
 		
 	    
 	    @RequestMapping("/mainboard/update")
-	   	Map<String, String> update(MultipartFile file ,  MainboardDto dto, HttpServletRequest req)
+	   	Map<String, String> update(MultipartFile file ,  MainboardDto dto,  JobpostingDto jobDto, HttpServletRequest req)
 	   	{		
 	   		System.out.println(dto);	   		
 	   		
@@ -119,9 +150,13 @@ public class MainboardController {
 	   		//System.out.println("**********************************    "  +  dto.getId());
 	   		
 	   		service.update(dto);
-	   		Map<String, String> map = new HashMap<String, String>();
-	   		map.put("result", "success");
-	   		return map;
+	   		Map<String, String> map = new HashMap<String, String>();if(dto.getPosting_type().equals("1")) {
+				System.out.println("채용공고 수정");
+				jobDto.setMboard_seq(dto.getMboard_seq());
+				jobpostingService.update(jobDto);
+			}
+			map.put("result", "success");
+			return map;
 	   	}
 	
 }

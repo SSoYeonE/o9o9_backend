@@ -8,21 +8,23 @@
 
 	
 	<insert id="Like_insert" parameterType="LikeDto">
-		insert into like
-		(mboard_seq,user_seq)
+		insert into `like`
+		(mboard_seq,user_seq,emoji)
 		values
-		(#{mboard_seq},#{user_seq})
+		(#{mboard_seq},#{user_seq},#{emoji})
 	</insert>
 	
-	<select id="Like_getList" parameterType="LikeDto"  resultType="LikeDto">
-		select 
-		from like where user_seq=#{user_seq} 
+	<select id="Like_getView" parameterType="LikeDto"  resultType="LikeDto">
+		select * from `like` where  user_seq = #{user_seq} and  mboard_seq=#{mboard_seq}
 	</select>
 	
-
 		
 	<delete id="Like_delete" parameterType="LikeDto">
-		delete from like where like_seq=#{like_seq}
+		delete from `like` where like_seq=#{like_seq}
 	</delete>
 		
+	<update id="Like_update" parameterType="LikeDto">
+		update `like` set emoji = #{emoji}
+		where user_seq = #{user_seq} and  mboard_seq=#{mboard_seq}
+	</update>	
 </mapper>

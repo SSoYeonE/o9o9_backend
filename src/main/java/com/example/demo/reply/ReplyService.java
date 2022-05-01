@@ -3,7 +3,8 @@ package com.example.demo.reply;
 import java.util.List;
 
 public interface ReplyService {
-
+	
+	List<ReplyDto> getList(ReplyDto dto);
 	int getTotalCnt(ReplyDto dto);
 	ReplyDto getView(long id);
 	void insert(ReplyDto dto);

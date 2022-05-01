@@ -27,10 +27,10 @@ import com.example.demo.common.FileUploadUtil;
 
 
 @CrossOrigin("*") //http:127.0.0.1 혹은 localhost
-@RestController   //jsp를 호출하지않고 json형태로 데이터를 보낸다
+@RestController //jsp 호출 안하고 json 형태로 데이터를 보낸다.
 public class BoardController {
 	
-	@Value("${fileUploadPath}") //src/main/resources/application.properies의 값을 읽어온다
+	@Value("${fileUploadPath}") //src/main/resources/application.properties 의 값을 읽어옴
 	String fileUploadPath;
 	
 	@Value("${domain}")
@@ -40,7 +40,7 @@ public class BoardController {
 	BoardService boardService;
 	
 	
-	@RequestMapping("/board/list/{pg}") //  /board/list/1
+	@RequestMapping("/board/list/{pg}")
 	HashMap<String, Object> getList(@PathVariable("pg")int pg, BoardDto dto)
 	{
 		//System.out.println("curpage  " + pg);
@@ -63,19 +63,18 @@ public class BoardController {
 	//@RequestBody  가 있어야 한다 
 	@RequestMapping("/board/insert")
 	Map<String, String> insert(MultipartFile file ,  BoardDto dto, HttpServletRequest req)
-	{		//파일업로드를 하려면 MultipartFile 가 필요하다
+	{		
 		System.out.println(dto.getTitle());
 		System.out.println(dto.getWriter());
 		System.out.println(dto.getContents());
 		
-		//fileupload/image
-		String uploadDir = fileUploadPath+ "/image" ; // 파일이 업로드될 경로
 		
-		//http://localhost:9090/fileUpload/image/1582531436.jpeg
+		String uploadDir = fileUploadPath+ "/image" ;
+		
+		//http://localhost:9090/user-photos/image/1582531436.jpeg
 		if(file!=null)
 		{
 			try {
-				//새로운 파일명을 반환한다(파일명이 중복될 수 있기때문에)
 				String filename=FileUploadUtil.upload(uploadDir, file);
 				dto.setFilename(filename);
 				dto.setImage_url(domain +"/"+ uploadDir + "/"+ filename);

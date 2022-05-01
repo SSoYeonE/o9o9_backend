@@ -13,11 +13,11 @@
 	
 	<select id="Mainboard_getList"  parameterType="MainboardDto"  resultType="MainboardDto">
  		
-	 	select mboard_seq,
+	 	select m.mboard_seq,
 			user_seq,
-			(select user_image1 from member where user_seq = m.user_seq) as user_image1,
-			(select user_name from member where user_seq = m.user_seq) as user_name,
-			(select user_level from member where user_seq = m.user_seq) as user_level,
+			(select user_image1 from p2_member where user_seq = m.user_seq) as user_image1,
+			(select user_name from p2_member where user_seq = m.user_seq) as user_name,
+			(select user_level from p2_member where user_seq = m.user_seq) as user_level,
 			wdate,
 			contents,
 			contents_url,
@@ -25,15 +25,18 @@
 			substring(m.hashtag, 2, CHAR_LENGTH(m.hashtag)-2) hashtag ,
 			posting_type,
 			del_yn,
-			like_seq
-			
+			like_seq,
+            j.*
+		
 		from mainboard m
+        left outer join  jobposting j
+        on m.mboard_seq = j.mboard_seq
 		
 		<if test='!keyword.equals("") and keyword!=null'>
 			where hashtag like concat('%#', #{keyword} , '#%')
 		</if> 
 		
-		order by mboard_seq desc
+		order by m.mboard_seq desc
 		limit #{start}, #{pageSize}    
 	</select>
 	
@@ -52,19 +55,22 @@
 	</select>
 
 	
-	<insert id="Mainboard_insert" parameterType="MainboardDto">
+	<insert id="Mainboard_insert" parameterType="MainboardDto" useGeneratedKeys="true" keyProperty="mboard_seq">
 		insert into mainboard
 		( user_seq, contents, contents_url, view_yn, hashtag, posting_type, wdate,del_yn,like_seq)
 		values
 		(#{user_seq}, #{contents}, #{contents_url}, #{view_yn}, #{hashtag}, #{posting_type},now(), #{del_yn},#{like_seq})
+		<selectKey keyProperty="mboard_seq" resultType="string" order="AFTER">
+		select max(mboard_seq) from mainboard
+		</selectKey>
 	</insert>
 	
-	<select id="Mainboard_getView"  parameterType="String"  resultType="MainboardDto">
- 		select
+	<select id="Mainboard_getView"  parameterType="long"  resultType="MainboardDto">
+ 		 select
  			m.mboard_seq
-			(select user_seq from member B where B.userseq=A.writer) as user_seq
-			,(select user_image1 from member B where B.user_seq=A.user_seq) as user_image1
-			,(select user_name from member B where B.user_seq=A.user_seq) as user_name
+			,user_seq
+			,(select user_image1 from p2_member B where B.user_seq=m.user_seq) as user_image
+			,(select user_name from p2_member B where B.user_seq=m.user_seq) as user_name
 			,m.wdate
 			,m.contents
 			,m.contents_url
@@ -94,6 +100,7 @@
 			,like_seq = #{like_seq}
 	where  mboard_seq=#{mboard_seq}
 	</update>
+		
 		
 </mapper>
 

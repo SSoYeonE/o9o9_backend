@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Jobposting">
+
+	<select id="Jobposting_getList"  parameterType="JobpostingDto"  resultType="JobpostingDto">
+ 		
+	 	select 
+	 		jobposting_seq,
+	 		mboard_seq,
+	 		start_date,
+	 		end_date,
+			company_name,
+			work_area,
+			work_field,
+			work_condition
+		from jobposting
+		order by mboard_seq desc
+		limit #{start}, #{pageSize}    
+	</select>
+	
+	<select id="Jobposting_getTotal" parameterType="jobpostingDto" resultType="Integer">
+		select count(*) from jobposting 	
+	</select>
+	
+	<insert id="Jobposting_insert" parameterType="jobpostingDto" useGeneratedKeys="true" keyProperty="mboard_seq">
+		insert into jobposting
+		(mboard_seq, start_date, end_date, company_name, work_area, work_field,work_condition)
+		values
+		( #{mboard_seq}, #{start_date}, #{end_date}, #{company_name}, #{work_area},#{work_field},#{work_condition})
+	
+	</insert>
+	
+	<select id="Jobposting_getView"  parameterType="String"  resultType="jobpostingDto">
+ 		select
+ 			jobposting_seq,
+	 		mboard_seq,
+	 		start_date,
+	 		end_date,
+			company_name,
+			work_area,
+			work_field,
+			work_condition
+			
+		from jobposting m where mboard_seq=#{mboard_seq}
+
+	</select>
+	
+	<delete id="Jobposting_delete" parameterType="jobpostingDto" >
+	delete from jobposting where jobposting_seq=#{jobposting_seq}
+	</delete>
+	
+	
+	<update id="Jobposting_update" parameterType="jobpostingDto" >
+	update jobposting 
+		set start_date = #{start_date},
+	 		end_date= #{end_date},
+			work_area= #{work_area},
+			work_field= #{work_field},
+			company_name = #{company_name},
+			work_condition= #{work_condition}
+	where  jobposting_seq=#{jobposting_seq}
+	</update>
+		
+	
+</mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Sideprofile">
+
+
+	<select id="Sideprofile_getView" parameterType="SideprofileDto" resultType="SideprofileDto">
+		select
+		user_name,
+		user_image1,
+		user_image2,
+		case
+			when user_level = '1'
+			then (select srt from com_profile where user_seq = #{user_seq})
+			when user_level = '0'
+			then (select profile_short from `profile_people` where user_seq = #{user_seq})
+			else '없음'
+		end as profile_short
+		from p2_member where user_seq = #{user_seq}
+
+	</select>
+</mapper>

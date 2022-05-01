@@ -12,114 +12,170 @@
 	<!-- if test="key=='1'"  - 이렇게 쓰면 안된다 인식안된다 -->
 	
 	
-	<select id="Member_isduplicate" parameterType="MemberDto" resultType="Integer">
-		select count(*) from member
-		where userid=#{userid}
-	</select>
 	
-	<insert id="Member_insert" parameterType="MemberDto" >
-	INSERT INTO member
-	(
-		userid,
-		password,
-		username,
-		email,
-		wdate,
-		nickname,
-		phone,
-		zipcode,
-		address1,
-		address2
-	)
-	VALUES
-	(
-		#{userid},
-		#{password},
-		#{username},
-		#{email},
-		now(),
-		#{nickname},
-		#{phone},
-		#{zipcode},
-		#{address1},
-		#{address2}
-	)
-	</insert>
+	
 	
 	<select id="Member_getInfo" parameterType="MemberDto" resultType="MemberDto">
 		select 	 
-		    id
-			,A.userid
-			,A.password
-			,A.email
-			,A.phone
-			,A.username 
-			,A.address1
-			,A.address2
-			,A.zipcode
-			,A.nickname
-		from member A
-		where userid=#{userid} 
+		    A.user_seq
+			,A.user_id
+			,A.user_password
+			,A.user_birth
+			,A.user_name
+			,A.user_image1
+			,A.user_image2
+			,A.user_address1
+			,A.user_address2
+			,A.user_mail
+			,A.user_phone
+			,A.user_wdate
+			,A.user_active
+			,A.user_level
+			,A.user_business
+		from p2_member A
+		where user_id=#{user_id} 
 	</select>
 	
-	<select id="Member_findid" parameterType="MemberDto" resultType="MemberDto">
+	
+	
+	
+	<insert id="Member_insert" parameterType="MemberDto" useGeneratedKeys="true" keyProperty="user_seq">
+	INSERT INTO p2_member
+	(
+		user_id
+		,user_password
+		,user_name
+		,user_image1
+		,user_image2
+		,user_address1
+		,user_address2
+		,user_mail
+		,user_phone
+		,user_business
+		,user_birth
+		,user_level
+		,user_wdate
+	)
+	VALUES
+	(
+
+		#{user_id}
+		,#{user_password}
+		,#{user_name}
+		,#{user_image1}
+		,#{user_image2}
+		,#{user_address1}
+		,#{user_address2}
+		,#{user_mail}
+		,#{user_phone}
+		,#{user_business}
+		,#{user_birth}
+		,#{user_level}
+		,now()
+	)
+	</insert>
+	
+	<select id="Member_findId" parameterType="MemberDto" resultType="MemberDto">
 		select 	
-		    id
-			,userid
-			,password
-			,email
-			,phone
-			,username 
-		from member
-		where email=#{email} and phone=#{phone} 
+			user_id 
+			,user_password
+			,user_name
+			,user_mail
+			,user_phone 
+		from p2_member
+		where user_mail=#{user_mail} and user_phone=#{user_phone} 
 	</select>
 	
-	<select id="Member_findpassword" parameterType="MemberDto" resultType="MemberDto">
+	
+	
+	<select id="Member_findPassword" parameterType="MemberDto" resultType="MemberDto">
 		select 	
-		    id
-			,A.userid
-			,A.password
-			,A.email
-			,A.phone
-			,A.username 
-			,A.address1
-			,A.address2
-			,A.zipcode
-			,A.nickname
-		from member A
-		where email=#{email} and userid=#{userid} 
+		    user_id
+			,user_password
+			,user_name
+			,user_mail
+			,user_phone 
+		from p2_member
+		where user_mail=#{user_mail} and user_id=#{user_id} 
 	</select>
 			
 	<update id="Member_updateInfo" parameterType="MemberDto" >
-		update member set password = #{password}
-						,email=#{email}
-						,phone=#{phone}
-						,address1=#{address1}
-						,address2 = #{address2}
-						,zipcode = #{zipcode}
-						,nickname=#{nickname}
-		where userid=#{userid}
-	</update>
+		update p2_member set 
+						user_password = #{user_password}
+						,user_mail=#{user_mail}
+						,user_phone=#{user_phone}
+						,user_image1=#{user_image1}
+						,user_image2=#{user_image2}
+						,user_address1=#{user_address1}
+						,user_address2=#{user_address2}
+						,user_business=#{user_business}
+						,user_birth=#{user_birth}
+						,user_level=#{user_level}
+		where user_id=#{user_id}
+		
 
+	</update>
+	
+	<select id="Member_search" parameterType="MemberDto" resultType="MemberDto">
+		select
+			A.user_seq, 	 
+			A.user_name,
+            A.user_image1,
+			A.user_level,
+			case
+				when A.user_level = '1'
+				then (select srt from com_profile where user_seq = A.user_seq)
+				when A.user_level = '0'
+				then (select profile_short from profile_people where user_seq = A.user_seq)
+				else '없음'
+                end as profile_short
+		from p2_member A
+		where user_name like concat('%', #{keyword} , '%');
+		
+		
+	</select>
+	
+	<select id="Member_search_getTotal" parameterType="MemberDto" resultType="Integer">
+	select count(*) from p2_member 
+	where user_name like concat('%', #{user_name} , '%')
+	</select>
+	
+	
+	<update id="Member_levelchange" parameterType="MemberDto" >
+	
+		update p2_member set 
+						user_level='1'						
+		where user_id=#{user_id}
+		
+		
+	</update>
+	
+	<select id="Member_getTotal" resultType="Integer">
+	select count(*) from p2_member 
+	</select>
+	
+	<select id="Member_pendingList" parameterType="MemberDto" resultType="MemberDto">
+		select 	 
+		    A.user_seq
+			,A.user_id
+			,A.user_password
+			,A.user_name
+			,A.user_image1
+			,A.user_image2
+			,A.user_address1
+			,A.user_address2
+			,A.user_mail
+			,A.user_phone
+			,A.user_wdate
+			,A.user_active
+			,A.user_level
+			,A.user_business
+			,A.user_pending
+		from p2_member A
+		where user_pending = 1
+		
+		
+	</select>
+	
 	
 </mapper>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

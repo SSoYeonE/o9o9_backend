@@ -7,12 +7,45 @@
         <!-- package name="com.example.demo"/-->
         
         <typeAlias alias="BoardDto" type="com.example.demo.board.domain.BoardDto"/>
-        <typeAlias alias="MainboardDto" type="com.example.demo.mainboard.MainboardDto"/>
+        <typeAlias alias="CompanyDto" type="com.example.demo.company.domain.CompanyDto"/>
+        <typeAlias alias="CandDto" type="com.example.demo.cand.domain.CandDto"/>
+        <typeAlias alias="CandDto2" type="com.example.demo.cand.domain.CandDto2"/>
+        
+    	<typeAlias alias="MemberDto" type="com.example.demo.member.MemberDto"/> <!-- 윤호님  -->
+    	
+    	<typeAlias alias="MainboardDto" type="com.example.demo.mainboard.MainboardDto"/>
+        <typeAlias alias="LikeDto" type="com.example.demo.like.LikeDto"/>
+        <typeAlias alias="ReplyDto" type="com.example.demo.reply.ReplyDto"/>
+        <typeAlias alias="JobpostingDto" type="com.example.demo.jobposting.JobpostingDto"/>
+        <typeAlias alias="SideprofileDto" type="com.example.demo.sideprofile.SideprofileDto"/>
+        
+        
+        <!-- 소연님 -->
+        
+        <typeAlias alias="FollowDto" type="com.example.demo.follow.FollowDto"/>
+        
+        <!-- 원웅님 -->
+        
+        <typeAlias alias="ProfileDto" type="com.example.demo.profile.ProfileDto"/>
+        
     </typeAliases>
     
     <mappers>   
         <mapper resource="mappers/Board.xml"/>
+        <mapper resource="mappers/Company.xml"/>
+        
+        <mapper resource="mappers/Member.xml"/>
+        
         <mapper resource="mappers/Mainboard.xml"/>
+        <mapper resource="mappers/Like.xml"/>
+        <mapper resource="mappers/Reply.xml"/>
+        <mapper resource="mappers/Jobposting.xml"/>
+        <mapper resource="mappers/Sideprofile.xml"/>
+        
+        <mapper resource="mappers/Follow.xml"/>
+        
+        <mapper resource="mappers/Profile.xml"/>
+        
         
     </mappers>
 </configuration>

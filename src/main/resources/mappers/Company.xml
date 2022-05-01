@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="Company">
+
+	<!-- 쿼리를 xml로 작성하고 id:식별값  
+		  parameterType:우리가 전달할값 
+	     resultType : 받아오는값  -->
+	     
+	<!-- if test="key=='1'"  - 이렇게 쓰면 안된다 인식안된다 -->
+	
+	<select id="Company_getList"  parameterType="CompanyDto"  resultType="CompanyDto">
+ 		
+ 		select
+			seq
+			,srt
+			,size
+			,day
+			,people
+			,intro
+			,date
+			,name
+			, image1
+			,image2
+			, address1
+			, address2
+			, mail
+			, phone
+			, business
+			, user_seq
+ 		from 
+ 		(
+	 		select
+			A.seq
+			,A.srt
+			,A.size
+			,A.day
+			,A.people
+			,A.intro
+			,A.date
+			,A.name
+			, (select user_image1 from p2_member M where M.user_seq = A.user_seq) image1
+			, (select user_image2 from p2_member M where M.user_seq = A.user_seq) image2
+			, (select user_address1 from p2_member M where M.user_seq = A.user_seq) address1
+			, (select user_address2 from p2_member M where M.user_seq = A.user_seq) address2
+			, (select user_mail from p2_member M where M.user_seq = A.user_seq) mail
+			, (select user_phone from p2_member M where M.user_seq = A.user_seq) phone
+			, (select user_business from p2_member M where M.user_seq = A.user_seq) business
+			, A.user_seq
+			    ,@rownum := @rownum+1 AS rnum
+				from com_profile A, (select @rownum:=0) B
+				
+				
+			<if test='key!=null and keyword!=null'>
+	
+				<if test='key=="1"'>
+				where name like concat('%', #{keyword} , '%')
+				</if>
+				
+<!-- 				<if test='key=="2"'>
+				where title like concat('%', #{keyword} , '%')
+				</if>
+				
+				<if test='key=="3"'>
+				where contents like concat('%', #{keyword} , '%')
+				</if>
+				
+				<if test='key=="4"'>
+				where title like concat('%', #{keyword} , '%') or
+				      contents like concat('%', #{keyword} , '%') 
+				</if> -->
+				
+			</if> 
+			
+			order by seq desc
+		) A
+		limit #{start}, #{pageSize}    
+	</select>
+	<!--  
+		paging  쿼리는  dbms마다 다르다 
+		
+		select ~~  limit 시작위치, 개수
+	
+	 -->
+	 
+	<!--   페이징때문에 전체 레코드 개수를 알아오기 위한 쿼리가 필요한다  -->
+	
+
+	
+	<insert id="Company_insert" parameterType="CompanyDto">
+		insert into com_profile(srt,size,day,people,intro,date,name,user_seq)
+		 values(#{srt}, #{size}, #{day}, #{people}, #{intro}, now(), #{name}, #{user_seq})
+		
+	</insert>
+	
+	<select id="Company_getView"  parameterType="Long"  resultType="CompanyDto">
+ 		select
+			A.seq
+			,A.srt
+			,A.size
+			,A.day
+			,A.people
+			,A.intro
+			,A.date
+			,A.name
+			, (select user_image1 from p2_member M where M.user_seq = A.user_seq) image1
+			, (select user_image2 from p2_member M where M.user_seq = A.user_seq) image2
+			, (select user_address1 from p2_member M where M.user_seq = A.user_seq) address1
+			, (select user_address2 from p2_member M where M.user_seq = A.user_seq) address2
+			, (select user_mail from p2_member M where M.user_seq = A.user_seq) mail
+			, (select user_phone from p2_member M where M.user_seq = A.user_seq) phone
+			, (select user_business from p2_member M where M.user_seq = A.user_seq) business
+			, A.user_seq
+		from com_profile A where user_seq = #{seq};
+		
+
+	</select>
+	
+	
+	<update id="Company_update" parameterType="CompanyDto" >
+	update com_profile A
+		set 
+			A.srt = #{srt}
+			,A.size = #{size}
+			,A.day = #{day}
+			,A.people = #{people}
+			,A.intro = #{intro}
+			,A.date = now()
+			,A.name = #{name}
+			
+	where  A.seq=#{seq}
+	</update>
+		
+		
+	<select id="Company_getTotal" parameterType="CompanyDto" resultType="Integer">
+		select count(*) from com_profile
+		<if test='key!=null and keyword!=null'>
+
+			<if test='key=="1"'>
+			where title like concat('%', #{keyword} , '%') or
+			      contents like concat('%', #{keyword} , '%') or 
+			      writer like concat('%', #{keyword} , '%') 
+			</if>
+			
+			<if test='key=="2"'>
+			where title like concat('%', #{keyword} , '%')
+			</if>
+			
+			<if test='key=="3"'>
+			where contents like concat('%', #{keyword} , '%')
+			</if>
+			
+			<if test='key=="4"'>
+			where title like concat('%', #{keyword} , '%') or
+			      contents like concat('%', #{keyword} , '%') 
+			</if>
+			
+		</if> 
+		
+	</select>
+	
+	
+	<insert id="Cand_insert" parameterType="CandDto">
+		insert into cand(jobposting_seq, user_seq, cand_date, com_seq, cand_confirm) 
+		values(#{jobposting_seq}, #{user_seq}, now(), #{com_seq}, #{cand_confirm});
+		
+	</insert>
+	
+	<delete id="Cand_delete" parameterType="CandDto">
+		delete from cand where cand_seq=#{cand_seq}
+	</delete>
+	
+	<update id="Cand_update" parameterType="CandDto" >
+	update cand A
+		set A.cand_confirm = #{cand_confirm}
+			
+	where  A.cand_seq=#{cand_seq}
+	</update>
+	
+	<select id="Cand_getList"  parameterType="CompanyDto"  resultType="CandDto2">
+		select A.*,
+		B.PROFILE_SEQ, C.USER_NAME, C.USER_BIRTH
+		from cand A
+		left outer join profile_people B on A.user_seq = B.user_seq
+		left outer join p2_member C on A.user_seq = C.user_seq
+		
+		where A.com_seq = #{seq}
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

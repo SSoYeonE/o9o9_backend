@@ -16,7 +16,10 @@ public class ReplyDto{
 	private String reply_seq="";
 	private String mboard_seq="";
 	private String user_seq="";
-
+	private String user_image1="";
+	private String user_name="";
+	private String reply="";
+	private String rdate="";
 	
 	
 }

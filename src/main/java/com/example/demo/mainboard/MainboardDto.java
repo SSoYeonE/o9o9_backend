@@ -17,7 +17,7 @@ import lombok.ToString;
 public class MainboardDto extends BaseDto{
 	private String mboard_seq="";
 	private String user_seq="";
-	private String user_image="";
+	private String user_image1="";
 	private String user_name="";
 	private String wdate="";
 	private String contents="";
@@ -27,6 +27,14 @@ public class MainboardDto extends BaseDto{
 	private String posting_type="";
 	private String del_yn="";
 	private String like_seq="";
+	
+	private String jobposting_seq="";
+	private String start_date ="";
+	private String end_date ="";
+	private String company_name	 ="";
+	private String work_area ="";	
+	private String work_field ="";	
+	private String work_condition ="";
 	
 	
 }

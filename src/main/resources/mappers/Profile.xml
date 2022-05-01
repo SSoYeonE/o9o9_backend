@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="Profile">
+
+<insert id="Profile_insert" parameterType="ProfileDto">
+		insert into profile_people
+		( profile_short, profile_degree1, profile_degree2, profile_career, profile_certificate, profile_skill,  profile_filename1,  profile_filename2,  profile_filename3,  profile_introduction, user_seq)
+		values
+		( #{profile_short}, #{profile_degree1}, #{profile_degree2}, #{profile_career}, #{profile_certificate}, #{profile_skill},  #{profile_filename1},  #{profile_filename2},  #{profile_filename3},  #{profile_introduction}, #{user_seq})
+	</insert>
+
+
+<select id="Profile_getView"  parameterType="Long"  resultType="ProfileDto">
+ 		select
+			profile_seq
+		    ,A.user_seq
+			,user_name
+		    ,user_phone
+		    ,user_birth
+		    ,user_mail
+		    ,user_image1
+			,profile_short
+			,profile_degree1
+			,profile_degree2
+		    ,profile_career
+		    ,profile_certificate
+		    ,profile_skill
+		    ,profile_filename1
+		    ,profile_filename2
+		    ,profile_filename3
+		    ,profile_introduction
+		from profile_people A
+		left outer join p2_member B on A.user_seq=B.user_seq
+		where A.user_seq=#{user_seq}
+
+	</select>
+
+<update id="Profile_update" parameterType="ProfileDto" >
+	update profile_people 
+		set profile_short = #{profile_short}
+		,profile_degree1 = #{profile_degree1}
+			,profile_degree2 = #{profile_degree2}
+			,profile_career = #{profile_career}
+			,profile_certificate = #{profile_certificate}
+			,profile_skill = #{profile_skill}
+			,profile_filename1 = #{profile_filename1}
+			,profile_filename2 = #{profile_filename2}
+			,profile_filename3 = #{profile_filename3}
+			,profile_introduction = #{profile_introduction}
+	where  user_seq=#{user_seq}
+	</update>
+
+</mapper>

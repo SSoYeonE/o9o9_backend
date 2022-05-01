@@ -5,35 +5,29 @@
 	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
  
 <mapper namespace="Reply">
-
 	
 	<insert id="Reply_insert" parameterType="ReplyDto">
-		insert into reply
-		(reply, rdate)
+		insert into reply 
+		(mboard_seq,user_seq,reply,rdate)
 		values
-		(#{reply}, now())
+		(#{mboard_seq},#{user_seq},#{reply}, now())
 	</insert>
 	
+	
 	<select id="Reply_getList" parameterType="ReplyDto"  resultType="ReplyDto">
-	
 	select 
-			A.reply,A.rdate
+			A.reply_seq
+			,(select user_name from p2_member B where B.user_seq=A.user_seq) as user_name
+			,(select user_image1 from p2_member B where B.user_seq=A.user_seq) as user_image1
+			,A.mboard_seq
+			,A.user_seq
+			,A.reply
+			,A.rdate
 	from reply A
-	where reply_seq=#{reply_seq}
-	
-	</select>
-	
-	<select id="Reply_getView" parameterType="ReplyDto"  resultType="ReplyDto">
-	select 
-			A.reply,A.rdate
-	from reply A
-	
-	where A.reply_seq=#{reply_seq}
-	</select>
-	
-	<update id="Reply_update" parameterType="ReplyDto">
-		update reply set reply = #{reply} where reply_seq=#{reply_seq}
-	</update>
+	where mboard_seq=#{mboard_seq}
+	order by reply_seq desc
+	</select>	
+
 	
 	<delete id="Reply_delete" parameterType="ReplyDto">
 		delete from reply where reply_seq=#{reply_seq}

@@ -43,6 +43,11 @@ public class ReplyDaoImpl implements ReplyDao {
 		
 	}
 
+	@Override
+	public List<ReplyDto> getList(ReplyDto dto) {
+		return sm.selectList("Reply_getList",dto);
+	}
+
 
 
 }

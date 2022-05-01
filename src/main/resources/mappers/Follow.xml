@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="Follow">
+
+	<!-- 쿼리를 xml로 작성하고 id:식별값  
+		  parameterType:우리가 전달할값 
+	     resultType : 받아오는값  -->
+	
+	<insert id="follow" parameterType="FollowDto" >	
+	INSERT INTO follow(follow_follower, follow_followee, follow_regdate) 
+	values((select user_id from p2_member where user_seq = #{follower_seq}) , 
+	(select user_id from p2_member where user_seq = #{followee_seq}) , now())			
+	</insert>
+	
+	<insert id="unfollow" parameterType="FollowDto" >
+	delete from follow where follow_follower=(select user_id from p2_member where user_seq = #{follower_seq}) 	
+	and follow_followee=(select user_id from p2_member where user_seq = #{followee_seq}) 
+	
+	</insert>
+	
+	<select id="isfollow" parameterType="FollowDto" resultType="Integer">
+	select count(*) 
+		from follow 
+	where 
+	follow_follower=(select user_id from p2_member where user_seq = #{follower_seq}) 
+	and follow_followee=(select user_id from p2_member where user_seq = #{followee_seq}) 
+	
+	</select>
+	<select id="selectFollowerUserList" parameterType="String" resultType="FollowDto">
+		select
+			B.user_seq as followee_seq,
+			B.user_name,
+			B.user_image1,
+			B.user_level,
+			case
+				when B.user_level = '1'
+				then (select srt from com_profile where user_seq = B.user_seq)
+				when B.user_level = '0'
+				then (select profile_short from profile_people where user_seq = B.user_seq)
+				else '없음'
+			end as profile_short
+		from follow A 
+		left outer join p2_member  B on B.user_id = A.follow_followee
+        where follow_follower=#{follower}
+		order by follow_regdate;
+	</select>
+	
+
+	
+	
+	<select id="selectFolloweeUserList" parameterType="String" resultType="FollowDto">
+		select
+			B.user_seq as follower_seq,
+			B.user_name,
+			B.user_image1,
+			B.user_level,
+			case
+				when B.user_level = '1'
+				then (select srt from com_profile where user_seq = B.user_seq)
+				when B.user_level = '0'
+				then (select profile_short from profile_people where user_seq = B.user_seq)
+				else '없음'
+			end as profile_short
+		from follow A 
+		left outer join p2_member  B on B.user_id = A.follow_follower
+        where follow_followee=#{followee}
+		order by follow_regdate;
+	</select>
+	
+				
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
